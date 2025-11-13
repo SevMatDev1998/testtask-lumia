@@ -1,13 +1,30 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLumiaPassportSession } from "@lumiapassport/ui-kit";
 
 export function useAuth() {
   const { session } = useLumiaPassportSession();
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
   useEffect(() => {
     const storeSession = async () => {
       if (session) {
         try {
+          const sessionData = session as any;
+          let address = null;
+          
+          if (sessionData.accounts?.[0]?.address) {
+            address = sessionData.accounts[0].address;
+          } else if (sessionData.address) {
+            address = sessionData.address;
+          } else if (sessionData.user?.address) {
+            address = sessionData.user.address;
+          }
+          
+          if (address) {
+            setWalletAddress(address);
+          }
+
           const allKeys = Object.keys(localStorage);
           const lumiaKeys = allKeys.filter(key => key.includes('lumia'));
           
@@ -16,26 +33,30 @@ export function useAuth() {
               const data = JSON.parse(localStorage.getItem(key) || "{}");
               if (data.accessToken) {
                 localStorage.setItem("sessionToken", data.accessToken);
-                console.log("Session token saved");
+                setSessionToken(data.accessToken);
                 return;
               }
               if (data.sessionToken) {
                 localStorage.setItem("sessionToken", data.sessionToken);
-                console.log("Session token saved");
+                setSessionToken(data.sessionToken);
                 return;
               }
-            } catch {}
+            } catch {
+              continue;
+            }
           }
         } catch {
-          console.error("Failed to parse session");
+          
         }
       } else {
         localStorage.removeItem("sessionToken");
+        setSessionToken(null);
+        setWalletAddress(null);
       }
     };
 
     storeSession();
   }, [session]);
 
-  return { session };
+  return { session, sessionToken, walletAddress };
 }

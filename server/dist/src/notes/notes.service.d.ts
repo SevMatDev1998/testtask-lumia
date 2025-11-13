@@ -6,40 +6,40 @@ export declare class NotesService {
     constructor(prisma: PrismaService);
     findAll(userId: string): Promise<{
         id: string;
-        createdAt: Date;
         title: string;
+        createdAt: Date;
         content: string;
         userId: string;
         updatedAt: Date;
     }[]>;
     findOne(id: string, userId: string): Promise<{
         id: string;
-        createdAt: Date;
         title: string;
+        createdAt: Date;
         content: string;
         userId: string;
         updatedAt: Date;
     }>;
     create(userId: string, dto: CreateNoteDto): Promise<{
         id: string;
-        createdAt: Date;
         title: string;
+        createdAt: Date;
         content: string;
         userId: string;
         updatedAt: Date;
     }>;
     update(id: string, userId: string, dto: UpdateNoteDto): Promise<{
         id: string;
-        createdAt: Date;
         title: string;
+        createdAt: Date;
         content: string;
         userId: string;
         updatedAt: Date;
     }>;
     remove(id: string, userId: string): Promise<{
         id: string;
-        createdAt: Date;
         title: string;
+        createdAt: Date;
         content: string;
         userId: string;
         updatedAt: Date;

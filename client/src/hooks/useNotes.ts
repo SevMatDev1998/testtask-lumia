@@ -15,15 +15,15 @@ export function useNotes() {
     setLoading(true);
     setError(null);
     try {
-      const response = await notesApi.getAll();
-      const decryptedNotes = await Promise.all(
-        response.data.map(async (note) => ({
+      const res = await notesApi.getAll();
+      const decrypted = await Promise.all(
+        res.data.map(async (note) => ({
           ...note,
           content: await decryptContent(note.content, session.ownerAddress),
         }))
       );
-      setNotes(decryptedNotes);
-    } catch (err) {
+      setNotes(decrypted);
+    } catch (e) {
       setError("Failed to load notes");
     } finally {
       setLoading(false);
@@ -36,25 +36,25 @@ export function useNotes() {
     setLoading(true);
     setError(null);
     try {
-      const encryptedContent = await encryptContent(
+      const encrypted = await encryptContent(
         content,
         session.ownerAddress
       );
-      const response = await notesApi.create({
+      const res = await notesApi.create({
         title,
-        content: encryptedContent,
+        content: encrypted,
       });
-      const decryptedNote = {
-        ...response.data,
+      const decrypted = {
+        ...res.data,
         content: await decryptContent(
-          response.data.content,
+          res.data.content,
           session.ownerAddress
         ),
       };
-      setNotes([decryptedNote, ...notes]);
-    } catch (err) {
+      setNotes([decrypted, ...notes]);
+    } catch (e) {
       setError("Failed to create note");
-      throw err;
+      throw e;
     } finally {
       setLoading(false);
     }
@@ -70,25 +70,25 @@ export function useNotes() {
     setLoading(true);
     setError(null);
     try {
-      const encryptedContent = await encryptContent(
+      const encrypted = await encryptContent(
         content,
         session.ownerAddress
       );
-      const response = await notesApi.update(id, {
+      const res = await notesApi.update(id, {
         title,
-        content: encryptedContent,
+        content: encrypted,
       });
-      const decryptedNote = {
-        ...response.data,
+      const decrypted = {
+        ...res.data,
         content: await decryptContent(
-          response.data.content,
+          res.data.content,
           session.ownerAddress
         ),
       };
-      setNotes(notes.map((n) => (n.id === id ? decryptedNote : n)));
-    } catch (err) {
+      setNotes(notes.map((n) => (n.id === id ? decrypted : n)));
+    } catch (e) {
       setError("Failed to update note");
-      throw err;
+      throw e;
     } finally {
       setLoading(false);
     }
@@ -100,9 +100,9 @@ export function useNotes() {
     try {
       await notesApi.delete(id);
       setNotes(notes.filter((n) => n.id !== id));
-    } catch (err) {
+    } catch (e) {
       setError("Failed to delete note");
-      throw err;
+      throw e;
     } finally {
       setLoading(false);
     }
